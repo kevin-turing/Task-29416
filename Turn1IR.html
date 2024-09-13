@@ -1,1 +1,195 @@
-T1IR
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical vs Consumer Inflation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Medical vs Consumer Inflation (1991-2024)</h1>
+    <div class="chart-container">
+        <h2>Historical Data</h2>
+        <canvas id="inflationChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <h2>Future Projections</h2>
+        <canvas id="futureChart"></canvas>
+    </div>
+
+    <script>
+    const years = Array.from({length: 34}, (_, i) => 1991 + i);
+    const medicalData = [3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3.5, 4];
+    const consumerData = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6.2, 6.5, 6, 5.5, 5];
+
+    const ctx = document.getElementById('inflationChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Medical Inflation',
+                data: medicalData,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Consumer Inflation',
+                data: consumerData,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Medical vs Consumer Inflation (1991-2024)',
+                    font: {
+                        size: 18
+                    }
+                },
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            xMin: 2008,
+                            xMax: 2008,
+                            borderColor: 'orange',
+                            borderWidth: 2,
+                            label: {
+                                content: '2008 Financial Crisis',
+                                enabled: true,
+                                position: 'top'
+                            }
+                        },
+                        line2: {
+                            type: 'line',
+                            xMin: 2020,
+                            xMax: 2020,
+                            borderColor: 'green',
+                            borderWidth: 2,
+                            label: {
+                                content: 'COVID-19 Pandemic',
+                                enabled: true,
+                                position: 'top'
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Inflation Rate (%)'
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 7
+                }
+            }
+        }
+    });
+
+    const ctxFuture = document.getElementById('futureChart').getContext('2d');
+    new Chart(ctxFuture, {
+        type: 'line',
+        data: {
+            labels: ['2022', '2023', '2024'],
+            datasets: [{
+                label: 'Projected Medical Inflation',
+                data: [3, 3.5, 4],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Projected Consumer Inflation',
+                data: [6, 5.5, 5],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Projected Inflation (2022-2024)',
+                    font: {
+                        size: 18
+                    }
+                },
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Projected Inflation Rate (%)'
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 7
+                }
+            }
+        }
+    });
+    </script>
+</body>
+</html>

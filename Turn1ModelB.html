@@ -1,1 +1,80 @@
-T1MB
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medical vs. Consumer Inflation Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .chart-container { width: 80%; margin: 20px auto; }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <canvas id="inflationChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="futureTrends"></canvas>
+    </div>
+
+    <script>
+    // Data for the charts (you'll need to fill this with actual data or fetch from an API)
+    const historicalData = {
+        labels: ['1991', '1992', ..., '2021'],
+        datasets: [{
+            label: 'Medical Inflation',
+            data: [/* medical inflation rates */],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            fill: false
+        }, {
+            label: 'Consumer Inflation',
+            data: [/* consumer inflation rates */],
+            borderColor: 'rgba(192, 75, 192, 1)',
+            fill: false
+        }]
+    };
+
+    const futureTrendsData = {
+        labels: ['2022', '2023', '2024', '2025'],
+        datasets: [{
+            label: 'Projected Medical Inflation',
+            data: [/* projected rates */],
+            borderColor: 'rgba(75, 192, 192, 0.5)',
+            borderDash: [10,5],
+            fill: false
+        }]
+    };
+
+    // Chart configurations
+    const config = {
+        type: 'line',
+        data: historicalData,
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Medical vs. Consumer Inflation Over 30 Years'
+            },
+            scales: {
+                x: { display: true, title: { display: true, text: 'Year' }},
+                y: { display: true, title: { display: true, text: 'Inflation Rate (%)' }}
+            }
+        }
+    };
+
+    const futureConfig = {
+        ...config,
+        data: futureTrendsData,
+        options: { 
+            title: { text: 'Projected Medical Inflation Trends' }
+        }
+    };
+
+    // Creating charts
+    const ctx = document.getElementById('inflationChart').getContext('2d');
+    const futureCtx = document.getElementById('futureTrends').getContext('2d');
+    new Chart(ctx, config);
+    new Chart(futureCtx, futureConfig);
+    </script>
+</body>
+</html>
