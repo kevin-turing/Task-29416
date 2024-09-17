@@ -1,99 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical vs Consumer Inflation</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
-    <style>
-        canvas {
-            max-width: 800px;
-            margin: auto;
-            display: block;
-        }
-        body {
-            font-family: Arial, sans-serif;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Balloon Pop Game</title>
+<style>
+body { margin: 0; overflow: hidden; background: #87CEEB; }
+canvas { display: block; }
+#menu, #pause {
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    display: none;
+}
+button {
+    display: block; 
+    margin: 10px auto; 
+    padding: 10px 20px;
+}
+</style>
 </head>
 <body>
-    <div style="width: 80%; margin: 20px auto;">
-        <canvas id="inflationChart"></canvas>
-    </div>
+<canvas id="gameCanvas"></canvas>
+<div id="menu">
+    <h2>Balloon Pop Game</h2>
+    <button onclick="startGame('classic')">Classic Mode</button>
+    <button onclick="startGame('precision')">Precision Mode</button>
+    <button onclick="startGame('chain')">Chain Reaction</button>
+    <button onclick="showTutorial()">Tutorial</button>
+</div>
+<div id="pause">
+    <h2>Paused</h2>
+    <button onclick="resumeGame()">Resume</button>
+    <button onclick="exitToMenu()">Exit to Menu</button>
+</div>
 
-    <script>
-    const ctx = document.getElementById('inflationChart').getContext('2d');
-    const myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Array.from({length: 30}, (_, i) => 1992 + i).concat(['2022', '2023', '2024']), // Assuming 2022 onwards as projections
-            datasets: [{
-                label: 'Medical Inflation Rate',
-                data: [/* Historical data up to 2021, then projections */],
-                borderColor: 'rgba(255, 99, 132, 1)',
-                yAxisID: 'y',
-                fill: false
-            }, {
-                label: 'Consumer Inflation Rate',
-                data: [/* Historical data up to 2021, then projections */],
-                borderColor: 'rgba(54, 162, 235, 1)',
-                yAxisID: 'y1',
-                fill: false
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    type: 'linear',
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'Medical Inflation (%)'
-                    }
-                },
-                y1: {
-                    type: 'linear',
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'Consumer Inflation (%)'
-                    },
-                    grid: {
-                        drawOnChartArea: false,
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Year'
-                    }
-                }
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Medical vs Consumer Inflation Over 30 Years with Projections'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${context.parsed.y}%`;
-                        }
-                    }
-                },
-                annotation: {
-                    annotations: {
-                        // Here you can add annotations for key events
-                    }
-                }
-            },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
-            }
-        }
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let game = {
+    state: 'menu',
+    mode: '',
+    players: 1,
+    balloons: [],
+    powerUps: [],
+    obstacles: [],
+    score: 0,
+    time: 0,
+    difficulty: 'medium',
+    // Add more game properties like player objects, etc.
+};
+
+function startGame(mode) {
+    game.state = 'playing';
+    game.mode = mode;
+    game.balloons = [];
+    document.getElementById('menu').style.display = 'none';
+    requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+    updateGame();
+    drawGame();
+    if (game.state === 'playing') requestAnimationFrame(gameLoop);
+}
+
+function updateGame() {
+    // Update game logic here: balloon movement, collision detection, power-up effects, etc.
+}
+
+function drawGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw balloons, power-ups, obstacles, HUD, etc.
+    game.balloons.forEach(balloon => {
+        ctx.beginPath();
+        ctx.arc(balloon.x, balloon.y, balloon.radius, 0, Math.PI * 2);
+        ctx.fillStyle = balloon.color;
+        ctx.fill();
     });
-    </script>
+    // Draw UI elements like score, time, power-up indicators
+}
+
+function showTutorial() {
+    // Implement tutorial logic
+}
+
+function pauseGame() {
+    game.state = 'paused';
+    document.getElementById('pause').style.display = 'block';
+}
+
+function resumeGame() {
+    game.state = 'playing';
+    document.getElementById('pause').style.display = 'none';
+    requestAnimationFrame(gameLoop);
+}
+
+function exitToMenu() {
+    game.state = 'menu';
+    document.getElementById('pause').style.display = 'none';
+    document.getElementById('menu').style.display = 'block';
+}
+
+// Event listeners for mouse/touch
+canvas.addEventListener('click', function(event) {
+    if (game.state === 'playing') {
+        // Check if a balloon was clicked
+    }
+});
+
+// Initial setup
+document.getElementById('menu').style.display = 'block';
+</script>
 </body>
 </html>

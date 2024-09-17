@@ -1,80 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Medical vs. Consumer Inflation Visualization</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .chart-container { width: 80%; margin: 20px auto; }
-    </style>
+<meta charset="UTF-8">
+<title>Balloon Pop Game</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  #gameArea {
+    width: 100%;
+    height: 600px;
+    background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+    position: relative;
+    overflow: hidden;
+  }
+  .balloon {
+    position: absolute;
+    cursor: pointer;
+    transition: top 10s linear;
+  }
+  .cloud {
+    position: absolute;
+    opacity: 0.5;
+  }
+  .particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+  }
+</style>
 </head>
 <body>
-    <div class="chart-container">
-        <canvas id="inflationChart"></canvas>
-    </div>
-    <div class="chart-container">
-        <canvas id="futureTrends"></canvas>
-    </div>
 
-    <script>
-    // Data for the charts (you'll need to fill this with actual data or fetch from an API)
-    const historicalData = {
-        labels: ['1991', '1992', ..., '2021'],
-        datasets: [{
-            label: 'Medical Inflation',
-            data: [/* medical inflation rates */],
-            borderColor: 'rgba(75, 192, 192, 1)',
-            fill: false
-        }, {
-            label: 'Consumer Inflation',
-            data: [/* consumer inflation rates */],
-            borderColor: 'rgba(192, 75, 192, 1)',
-            fill: false
-        }]
-    };
+<div id="gameArea"></div>
+<div id="menu" style="display: none;">
+  <!-- Menu content here -->
+</div>
+<div id="pauseScreen" style="display: none;">
+  <!-- Pause screen content -->
+</div>
+<div id="tutorial" style="display: none;">
+  <!-- Tutorial content -->
+</div>
 
-    const futureTrendsData = {
-        labels: ['2022', '2023', '2024', '2025'],
-        datasets: [{
-            label: 'Projected Medical Inflation',
-            data: [/* projected rates */],
-            borderColor: 'rgba(75, 192, 192, 0.5)',
-            borderDash: [10,5],
-            fill: false
-        }]
-    };
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+let game = {
+  balloons: [],
+  interval: null,
+  score: 0,
+  mode: 'Classic',
+  timeLeft: 60,
+  powerUps: { slowTime: false, multiPop: false },
+  
+  startGame: function() {
+    this.setupEventListeners();
+    this.spawnBalloons();
+  },
+  
+  setupEventListeners: function() {
+    $('#gameArea').on('click', '.balloon', this.popBalloon);
+  },
+  
+  spawnBalloons: function() {
+    this.interval = setInterval(() => {
+      if (Math.random() < 0.05) this.addPowerUp();
+      if (Math.random() < 0.1) this.addObstacle();
+      this.balloons.push({element: this.createBalloon()});
+      this.updateBalloons();
+    }, 1000 / (this.difficulty || 1));
+  },
+  
+  createBalloon: function() {
+    let balloon = $('<div class="balloon"><img src="balloon.png" width="50"></div>');
+    balloon.css({
+      'left': Math.random() * ($('#gameArea').width() - 50),
+      'top': $('#gameArea').height()
+    });
+    $('#gameArea').append(balloon);
+    return balloon;
+  },
+  
+  popBalloon: function(e) {
+    let index = game.balloons.findIndex(b => b.element[0] === e.target);
+    if (index !== -1) {
+      game.createParticleEffect($(e.target).position());
+      game.balloons.splice(index, 1);
+      $(e.target).remove();
+      game.updateScore(10);
+      // Handle chain reaction or precision mode logic here
+    }
+  },
+  
+  createParticleEffect: function(position) {
+    for(let i = 0; i < 10; i++) {
+      let particle = $('<div class="particle"></div>');
+      $('#gameArea').append(particle);
+      particle.css(position).animate({
+        top: '-=50px', left: '+=30px'
+      }, 500, function() { $(this).remove(); });
+    }
+  },
+  
+  updateBalloons: function() {
+    this.balloons.forEach((balloon, i) => {
+      let newTop = parseFloat(balloon.element.css('top')) - (1 + this.difficulty * 0.5);
+      if (newTop < -50) {
+        balloon.element.remove();
+        this.balloons.splice(i, 1);
+      } else {
+        balloon.element.css('top', newTop + 'px');
+      }
+    });
+  },
+  
+  updateScore: function(points) {
+    this.score += points;
+    // Update UI here
+  }
+};
 
-    // Chart configurations
-    const config = {
-        type: 'line',
-        data: historicalData,
-        options: {
-            responsive: true,
-            title: {
-                display: true,
-                text: 'Medical vs. Consumer Inflation Over 30 Years'
-            },
-            scales: {
-                x: { display: true, title: { display: true, text: 'Year' }},
-                y: { display: true, title: { display: true, text: 'Inflation Rate (%)' }}
-            }
-        }
-    };
+// Initialize game on load
+$(function() {
+  game.startGame();
+});
 
-    const futureConfig = {
-        ...config,
-        data: futureTrendsData,
-        options: { 
-            title: { text: 'Projected Medical Inflation Trends' }
-        }
-    };
+// Additional functions for menu, pause, tutorial, and modes would be added here
+</script>
 
-    // Creating charts
-    const ctx = document.getElementById('inflationChart').getContext('2d');
-    const futureCtx = document.getElementById('futureTrends').getContext('2d');
-    new Chart(ctx, config);
-    new Chart(futureCtx, futureConfig);
-    </script>
 </body>
 </html>
